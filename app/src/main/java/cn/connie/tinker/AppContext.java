@@ -110,11 +110,10 @@ public class AppContext extends TinkerApplication implements DealUnKnowException
         /**tinker热修复功能***/
         String appId = AppUtil.getMetaData(Constants.PATCH_APP_ID);
         String appSecret = AppUtil.getMetaData(Constants.PATCH_APP_SECRET);
-        String patchTag = BuildConfig.PATCH_TAG ? AppUtil.getMetaData(Constants.PATCH_APP_TAG) : null;
         PatchManager.getInstance().init(this, Constants.BASE_PATCH_URL, appId, appSecret, new QueryAndPatchPatchManager());
         PatchManager.getInstance().register(new PatchManagerRegisterListener());
         PatchManager.getInstance().setChannel(umChannel);
-        PatchManager.getInstance().setTag(patchTag);
+        PatchManager.getInstance().setTag(umChannel);
     }
 
     @Override

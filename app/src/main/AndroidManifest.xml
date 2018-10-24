@@ -153,10 +153,6 @@
         <meta-data
             android:name="PATCH_APP_SECRET"
             android:value="${PATCH_APP_SECRET}" />
-        <meta-data
-            android:name="PATCH_APP_TAG"
-            android:value="${PATCH_APP_TAG}" />
-
 
         <provider
             android:name="android.support.v4.content.FileProvider"

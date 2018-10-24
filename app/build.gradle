@@ -53,12 +53,14 @@ android {
             vivo {
                 manifestPlaceholders = [UMENG_CHANNEL_VALUE: "vivo"]
             }
+            patch_test {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "patch_test"]
+            }
         }
         manifestPlaceholders += ["JPUSH_APPKEY"      : "fabd806432417787ac4ab7e8"
                                  , "UMENG_APPKEY"    : "5a28aa33f43e486da900000d"
                                  , "PATCH_APP_ID"    : "20181009154918024-6724"
                                  , "PATCH_APP_SECRET": "32f5fda517274a82864947377dfc6083"
-                                 , "PATCH_APP_TAG"   : "test-patch"
                                  , "DESIGN_WIDTH"    : "720"
                                  , "DESIGN_HEIGHT"   : "1280"]
 
@@ -67,7 +69,6 @@ android {
         debug {
             buildConfigField "boolean", "LOG_DEBUG", "true"
             buildConfigField "boolean", "USE_CANARY", "true"
-            buildConfigField "boolean", "PATCH_TAG", "true"
             debuggable true
             minifyEnabled false
             signingConfig signingConfigs.debug
@@ -77,7 +78,6 @@ android {
         release {
             buildConfigField "boolean", "LOG_DEBUG", "false"
             buildConfigField "boolean", "USE_CANARY", "false"
-            buildConfigField "boolean", "PATCH_TAG", "true"
             minifyEnabled true
             shrinkResources true
             zipAlignEnabled true
