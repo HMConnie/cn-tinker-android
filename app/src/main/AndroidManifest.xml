@@ -101,7 +101,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activitys.MainActivity" />
+        <activity
+            android:name=".activitys.MainActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".base.PermissionShadowActivity"
             android:theme="@style/Theme.AppStartLoadTranslucent" />
