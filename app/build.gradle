@@ -53,8 +53,8 @@ android {
             vivo {
                 manifestPlaceholders = [UMENG_CHANNEL_VALUE: "vivo"]
             }
-            patchtest {
-                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "patchtest"]
+            tags {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "tags"]//灰度发布所需的tag名称
             }
         }
         manifestPlaceholders += ["JPUSH_APPKEY"      : "fabd806432417787ac4ab7e8"
@@ -142,7 +142,7 @@ dependencies {
 }
 
 def bakPath = file("${buildDir}/bakApk/")
-def oldApkPath = "app-2018-10-24-13-17-02"
+def oldApkPath = "app-2018-10-24-13-41-18"
 //for normal build old apk file to build patch apk
 def tinkerOldApkPath = "${bakPath}/${oldApkPath}.apk"
 
