@@ -50,6 +50,9 @@ android {
             official {
                 manifestPlaceholders = [UMENG_CHANNEL_VALUE: "official"]
             }
+            vivo {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "vivo"]
+            }
         }
         manifestPlaceholders += ["JPUSH_APPKEY"      : "fabd806432417787ac4ab7e8"
                                  , "UMENG_APPKEY"    : "5a28aa33f43e486da900000d"
@@ -64,7 +67,7 @@ android {
         debug {
             buildConfigField "boolean", "LOG_DEBUG", "true"
             buildConfigField "boolean", "USE_CANARY", "true"
-            buildConfigField "boolean", "PATCH_TAG","true"
+            buildConfigField "boolean", "PATCH_TAG", "true"
             debuggable true
             minifyEnabled false
             signingConfig signingConfigs.debug
@@ -74,7 +77,7 @@ android {
         release {
             buildConfigField "boolean", "LOG_DEBUG", "false"
             buildConfigField "boolean", "USE_CANARY", "false"
-            buildConfigField "boolean", "PATCH_TAG","true"
+            buildConfigField "boolean", "PATCH_TAG", "true"
             minifyEnabled true
             shrinkResources true
             zipAlignEnabled true
@@ -139,7 +142,7 @@ dependencies {
 }
 
 def bakPath = file("${buildDir}/bakApk/")
-def oldApkPath = "app-2018-10-24-10-24-00"
+def oldApkPath = "app-2018-10-24-13-17-02"
 //for normal build old apk file to build patch apk
 def tinkerOldApkPath = "${bakPath}/${oldApkPath}.apk"
 
