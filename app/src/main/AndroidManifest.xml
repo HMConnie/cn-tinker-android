@@ -111,17 +111,6 @@
 
         <!--tinker-->
         <service
-            android:name="com.dx168.patchsdk.RestartService"
-            android:process=":restart" />
-
-        <receiver android:name="com.dx168.patchsdk.DebugReceiver">
-            <intent-filter>
-                <action android:name="com.dx168.patchsdk.DebugReceiver.PATCH" />
-                <action android:name="com.dx168.patchsdk.DebugReceiver.RESTART" />
-            </intent-filter>
-        </receiver>
-
-        <service
             android:name=".tinker.SampleResultService"
             android:exported="false" />
 
@@ -129,7 +118,6 @@
             android:name=".tinker.SamplePatchService"
             android:exported="false"
             android:process=":patch" />
-
         <service
             android:name="com.dx168.patchsdk.RestartService"
             android:process=":restart" />
@@ -140,8 +128,6 @@
                 <action android:name="com.dx168.patchsdk.DebugReceiver.RESTART" />
             </intent-filter>
         </receiver>
-
-
         <!--tinker-->
 
         <meta-data
