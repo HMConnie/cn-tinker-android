@@ -53,8 +53,8 @@ android {
             vivo {
                 manifestPlaceholders = [UMENG_CHANNEL_VALUE: "vivo"]
             }
-            patch_test {
-                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "patch_test"]
+            patchtest {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "patchtest"]
             }
         }
         manifestPlaceholders += ["JPUSH_APPKEY"      : "fabd806432417787ac4ab7e8"
