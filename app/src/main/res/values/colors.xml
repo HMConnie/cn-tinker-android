@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="color_black">#000000</color>
+    <color name="color_title_bar">#2B2B2B</color>
+    <color name="color_white">#FFFFFF</color>
+    <color name="color_gray">#DCDCDC</color>
+    <color name="title_bar">#FFFFFF</color>
+    <color name="title_bar_text_color">#333333</color>
+    <color name="title_bar_main">#FFFFFF</color>
+    <color name="title_bar_login">#3E82FF</color>
+    <color name="color_f2f3f4">#F2F3F4</color>
+    <color name="color_476656">#476656</color>
+    <color name="color_6ca68b">#6CA68B</color>
+    <color name="color_2e0">#2E000000</color>
+    <color name="color_444">#444444</color>
+    <color name="color_333">#333333</color>
+    <color name="color_d85800">#D85800</color>
+    <color name="color_d2a475">#D2A475</color>
+    <color name="color_a1d2a475">#A1D2A475</color>
+    <color name="color_b4b4b4">#B4B4B4</color>
+    <color name="color_c8c8c8">#C8C8C8</color>
+    <color name="color_b1b8b68">#B1B8B6</color>
+    <color name="color_dcdcdc">#DCDCDC</color>
+    <color name="color_dialog_content">#333333</color>
+    <color name="color_dialog_cancle">#999999</color>
+    <color name="color_dialog_positive">#D2A475</color>
+    <color name="color_ebe">#EBEBEB</color>
+    <color name="color_f9fcff">#F9FCFF</color>
+    <color name="color_98bddf">#98BDDF</color>
+    <color name="accent">#FF4081</color>
+    <color name="color_666">#666666</color>
+    <color name="color_red">#FF0000</color>
+    <color name="color_999">#999999</color>
+    <color name="color_a0a6a4">#A0A6A4</color>
+    <color name="color_232624">#232624</color>
+    <color name="color_f7f7f7">#F7F7F7</color>
+    <color name="color_50ac8d">#50AC8D</color>
+
+    <color name="red_normal">#FF0000</color>
+    <color name="red_pressed">#FF6666</color>
+</resources>

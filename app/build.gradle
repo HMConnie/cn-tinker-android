@@ -1,0 +1,273 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.tencent.tinker.patch'
+
+android {
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_7
+    }
+    signingConfigs {
+        debug {
+            storeFile file(project.file("keystore/SGCaiAndroid.jks"))
+            keyAlias 'sgcai'
+            keyPassword '11111111'
+            storePassword '11111111'
+
+        }
+        release {
+            storeFile file(project.file("keystore/SGCaiAndroid.jks"))
+            keyAlias 'sgcai'
+            keyPassword '11111111'
+            storePassword '11111111'
+            v2SigningEnabled false
+            v1SigningEnabled true
+        }
+    }
+    defaultConfig {
+        applicationId "cn.connie.tinker"
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+        versionCode rootProject.ext.android["versionCode"]
+        versionName rootProject.ext.android["versionName"]
+        multiDexEnabled rootProject.ext.android["multiDex"]
+        flavorDimensions rootProject.ext.android["flavorDimensions"]
+        multiDexKeepProguard file("${buildDir}/intermediates/tinker_intermediates/tinker_multidexkeep.pro")
+        testInstrumentationRunner rootProject.ext.dependencies["androidJUnitRunner"]
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath = true
+            }
+
+        }
+        ndk {
+            //设置支持的SO库架构
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+        }
+        productFlavors {
+            official {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "official"]
+            }
+        }
+        manifestPlaceholders += ["JPUSH_APPKEY"      : "fabd806432417787ac4ab7e8"
+                                 , "UMENG_APPKEY"    : "5a28aa33f43e486da900000d"
+                                 , "PATCH_APP_ID"    : "20181009154918024-6724"
+                                 , "PATCH_APP_SECRET": "32f5fda517274a82864947377dfc6083"
+                                 , "PATCH_APP_TAG"   : "test-patch"
+                                 , "DESIGN_WIDTH"    : "720"
+                                 , "DESIGN_HEIGHT"   : "1280"]
+
+    }
+    buildTypes {
+        debug {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            buildConfigField "boolean", "USE_CANARY", "true"
+            buildConfigField "boolean", "PATCH_TAG","true"
+            debuggable true
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            buildConfigField "boolean", "USE_CANARY", "false"
+            buildConfigField "boolean", "PATCH_TAG","true"
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
+            signingConfig signingConfigs.release
+            def names = project.file("proguard").list()
+            for (def name in names) {
+                proguardFile 'proguard/' + name //添加的混淆集合中
+            }
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    dexOptions {
+        jumboMode = true
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    annotationProcessor rootProject.ext.dependencies["dagger2-compiler"]
+    testCompile rootProject.ext.dependencies["junit"]
+    debugCompile rootProject.ext.dependencies["canary-debug"]
+    releaseCompile rootProject.ext.dependencies["canary-release"]
+
+    compile files('libs/Sign.jar')
+    compile rootProject.ext.dependencies["dagger2"]
+    compile rootProject.ext.dependencies["dagger2-android"]
+    compile rootProject.ext.dependencies["support-v4"]
+    compile rootProject.ext.dependencies["recyclerview-v7"]
+    compile rootProject.ext.dependencies["support-v13"]
+    compile rootProject.ext.dependencies["rxjava"]
+    compile rootProject.ext.dependencies["rxandroid"]
+    compile rootProject.ext.dependencies["rxlifecycle"]
+    compile rootProject.ext.dependencies["rxlifecycle-components"]
+    compile rootProject.ext.dependencies["retrofit"]
+    compile rootProject.ext.dependencies["retrofit-converter-gson"]
+    compile rootProject.ext.dependencies["retrofit-adapter-rxjava"]
+    compile rootProject.ext.dependencies["okhttp3"]
+    compile rootProject.ext.dependencies["okhttp-urlconnection"]
+    compile rootProject.ext.dependencies["umeng-analytics"]
+    compile rootProject.ext.dependencies["umeng-common"]
+    compile rootProject.ext.dependencies["autolayout"]
+    compile rootProject.ext.dependencies["easypermission"]
+    compile rootProject.ext.dependencies["glide"]
+    compile rootProject.ext.dependencies["toasty"]
+    compile(rootProject.ext.dependencies["material-dialogs-core"])
+    compile rootProject.ext.dependencies["multidex"]
+    compile rootProject.ext.dependencies["patchsdk"]
+    compile rootProject.ext.dependencies["tinker-android-anno"]
+    compile rootProject.ext.dependencies["tinker-android-lib"]
+    compile rootProject.ext.dependencies["retrofit-url-manager"]
+    compile rootProject.ext.dependencies["avi-library"]
+}
+
+def bakPath = file("${buildDir}/bakApk/")
+def oldApkPath = "app-2018-10-24-10-24-00"
+//for normal build old apk file to build patch apk
+def tinkerOldApkPath = "${bakPath}/${oldApkPath}.apk"
+
+//proguard mapping file to build patch apk
+def tinkerApplyMappingPath = "${bakPath}/${oldApkPath}-mapping.txt"
+//resource R.txt to build patch apk, must input if there is resource changed
+def tinkerApplyResourcePath = "${bakPath}/${oldApkPath}-R.txt"
+def tinkerBuildFlavorDirectory = "${bakPath}/${oldApkPath}"
+def tinkerVersion = rootProject.ext.android["versionName"]
+def tinkerPatchVersion = rootProject.ext.android["patchVersion"]
+
+def flavors = new ArrayList<>()
+project.android.productFlavors.each { flavor ->
+    flavors.add(flavor.name)
+}
+def hasFlavors = flavors.size() > 0
+def date = new Date().format("yyyy-MM-dd-HH-mm-ss")
+
+tinkerPatch {
+    oldApk = "${tinkerOldApkPath}"
+    ignoreWarning = true
+    useSign = true
+    tinkerEnable = true
+
+    buildConfig {
+        applyMapping = "${tinkerApplyMappingPath}"
+        applyResourceMapping = "${tinkerApplyResourcePath}"
+        tinkerId = "${tinkerVersion}"
+        keepDexApply = false
+        isProtectedApp = false
+        supportHotplugComponent = false
+    }
+
+    dex {
+        dexMode = "jar"
+        pattern = ["classes*.dex", "assets/secondary-dex-?.jar"]
+        loader = ["cn.connie.tinker.tinker.**", "cn.connie.tinker.AppContext"]
+    }
+
+    lib {
+        pattern = ["lib/*/*.so"]
+    }
+
+    res {
+        pattern = ["res/*", "assets/*", "resources.arsc", "AndroidManifest.xml"]
+        largeModSize = 100
+    }
+
+    packageConfig {
+        configField("patchMessage", "cn.connie.tinker is tinker to use")
+        configField("platform", "all")
+        configField("patchVersion", "${tinkerPatchVersion}")
+    }
+
+    sevenZip {
+        zipArtifact = "com.tencent.mm:SevenZip:1.2.3"
+    }
+}
+
+
+android.applicationVariants.all { variant ->
+    def taskName = variant.name
+    tasks.all {
+        if ("assemble${taskName.capitalize()}".equalsIgnoreCase(it.name)) {
+
+            it.doLast {
+                copy {
+                    def fileNamePrefix = "${project.name}-${variant.baseName}"
+                    def newFileNamePrefix = hasFlavors ? "${fileNamePrefix}" : "${fileNamePrefix}-${date}"
+                    def destPath = hasFlavors ? file("${bakPath}/${project.name}-${date}/${variant.flavorName}") : "${bakPath}"
+
+                    from variant.outputs[0].outputFile
+                    into destPath
+                    rename { String fileName ->
+                        fileName.replace("${fileNamePrefix}.apk", "${newFileNamePrefix}.apk")
+                    }
+
+                    from "${buildDir}/outputs/mapping/${variant.dirName}/mapping.txt"
+                    into destPath
+                    rename { String fileName ->
+                        fileName.replace("mapping.txt", "${newFileNamePrefix}-mapping.txt")
+                    }
+
+                    from "${buildDir}/intermediates/symbols/${variant.dirName}/R.txt"
+                    into destPath
+                    rename { String fileName ->
+                        fileName.replace("R.txt", "${newFileNamePrefix}-R.txt")
+                    }
+                }
+            }
+        }
+    }
+}
+project.afterEvaluate {
+    //sample use for build all flavor for one time
+    if (hasFlavors) {
+        task(tinkerPatchAllFlavorRelease) {
+            group = "cn-tinker-android"
+            def originOldPath = "${tinkerBuildFlavorDirectory}"
+            for (String flavor : flavors) {
+                def tinkerTask = tasks.getByName("tinkerPatch${flavor.capitalize()}Release")
+                dependsOn tinkerTask
+                def preAssembleTask = tasks.getByName("process${flavor.capitalize()}ReleaseManifest")
+                preAssembleTask.doFirst {
+                    String flavorName = preAssembleTask.name.substring(7, 8).toLowerCase() + preAssembleTask.name.substring(8, preAssembleTask.name.length() - 15)
+                    project.tinkerPatch.oldApk = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-release.apk"
+                    project.tinkerPatch.buildConfig.applyMapping = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-release-mapping.txt"
+                    project.tinkerPatch.buildConfig.applyResourceMapping = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-release-R.txt"
+                }
+
+            }
+        }
+    }
+    task(tinkerPatchAllFlavorDebug) {
+        group = 'cn-tinker-android'
+        def originOldPath = "${tinkerBuildFlavorDirectory}"
+        for (String flavor : flavors) {
+            def tinkerTask = tasks.getByName("tinkerPatch${flavor.capitalize()}Debug")
+            dependsOn tinkerTask
+            def preAssembleTask = tasks.getByName("process${flavor.capitalize()}DebugManifest")
+            preAssembleTask.doFirst {
+                String flavorName = preAssembleTask.name.substring(7, 8).toLowerCase() + preAssembleTask.name.substring(8, preAssembleTask.name.length() - 13)
+                project.tinkerPatch.oldApk = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-debug.apk"
+                project.tinkerPatch.buildConfig.applyMapping = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-debug-mapping.txt"
+                project.tinkerPatch.buildConfig.applyResourceMapping = "${originOldPath}/${flavorName}/${project.name}-${flavorName}-debug-R.txt"
+            }
+
+        }
+    }
+}
+
